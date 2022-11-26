@@ -1,113 +1,173 @@
-// npm install @apollo/server express graphql cors body-parser
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import express from 'express';
-import http from 'http';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-// import { typeDefs, resolvers } from './schema';
-
-// Required logic for integrating with Express
+const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLNonNull } = require('graphql');
 const app = express();
-// Our httpServer handles incoming requests to our Express app.
-// Below, we tell Apollo Server to "drain" this httpServer,
-// enabling our servers to shut down gracefully.
-const httpServer = http.createServer(app);
-const httpServer2 = http.createServer(app);
+const bodyParser = require('body-parser')
+app.use(bodyParser.json());
+const NoIntrospection = require('graphql-disable-introspection')
 
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
-const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
-
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`;
+const authors = [
+  { id: 1, name: 'J. K. Rowling' },
+  { id: 2, name: 'J. R. R. Tolkien' },
+  { id: 3, name: 'Brent Weeks' }
+]
 
 const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-];
+  { id: 1, name: 'Harry Potter and the Chamber of Secrets', authorId: 1 },
+  { id: 2, name: 'Harry Potter and the Prisoner of Azkaban', authorId: 1 },
+  { id: 3, name: 'Harry Potter and the Goblet of Fire', authorId: 1 },
+  { id: 4, name: 'The Fellowship of the Ring', authorId: 2 },
+  { id: 5, name: 'The Two Towers', authorId: 2 },
+  { id: 6, name: 'The Return of the King', authorId: 2 },
+  { id: 7, name: 'The Way of Shadows', authorId: 3 },
+  { id: 8, name: 'Beyond the Shadows', authorId: 3 }
+]
 
-// Resolvers define how to fetch the types defined in your schema.
-// This resolver retrieves books from the "books" array above.
-const resolvers = {
-  Query: {
-    books: () => books,
+// construct graphQL Schema (from docs https://graphql.org/graphql-js/running-an-express-graphql-server/)
+// const schema = buildSchema(`
+//   type Query {
+//     hello: String
+//   }
+// `);
+
+// From WebDevSimplified
+// const schema = new GraphQLSchema({
+//   query: new GraphQLObjectType({
+//     name: 'HelloWorld',
+//     fields: () => ({
+//       message: {
+//         type: GraphQLString,
+//         resolve: ( ) => 'Hello World'
+//       }
+//     })
+//   })
+// })
+
+const BookType = new GraphQLObjectType({
+  name: 'Book',
+  description: 'This represents a book written by an author',
+  fields: () => ({
+    id: { type: GraphQLNonNull(GraphQLInt) },
+    name: { type: GraphQLNonNull(GraphQLString) },
+    authorId: { type: GraphQLNonNull(GraphQLInt) },
+    author: {
+      type: AuthorType,
+      resolve: (book) => {
+        return authors.find(author => author.id === book.authorId)
+      }
+    }
+  })
+})
+
+const AuthorType = new GraphQLObjectType({
+  name: 'Author',
+  description: 'This represents a the author of a book',
+  fields: () => ({
+    id: { type: GraphQLNonNull(GraphQLInt) },
+    name: { type: GraphQLNonNull(GraphQLString) },
+    books: {
+      type: new GraphQLList(BookType),
+      resolve: (author) => {
+        return books.filter(book => book.authorId === author.id)
+      }
+    }
+  })
+})
+
+const RootQueryType = new GraphQLObjectType({
+  name: 'Query',
+  description: 'Root Query',
+  fields: () => ({
+    book: {
+      type: BookType,
+      description: 'a single Book',
+      args: {
+        id: { type: GraphQLInt }
+      },
+      resolve: (parent, args) => books.find(book => book.id === args.id)
+    },
+    books: {
+      type: new GraphQLList(BookType),
+      description: 'list of All Books',
+      resolve: () => books
+    },
+    author: {
+      type: AuthorType,
+      description: 'A single author',
+      args: {
+        id: { type: GraphQLInt }
+      },
+      resolve: (parent, args) => authors.find(author => author.id === args.id)
+    },
+    authors: {
+      type: new GraphQLList(AuthorType),
+      description: 'list of All authors',
+      resolve: () => authors
+    }
+  })
+})
+
+const RootMutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  description: 'Root mutation',
+  fields: () => ({
+    addBook: {
+      type: BookType,
+      description: 'Add a book',
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+        authorId: { type: GraphQLNonNull(GraphQLInt) },
+      },
+      resolve: (parent, args) => {
+        const book = { id: books.length + 1, name: args.name, authorId: args.authorId }
+        books.push(book);
+        return book;
+      }
+    },
+    addAuthor: {
+      type: AuthorType,
+      description: 'Add an Author',
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+      },
+      resolve: (parent, args) => {
+        const author = { id: authors.length + 1, name: args.name }
+        authors.push(author);
+        return author;
+      }
+    }
+  })
+})
+
+const schema = new GraphQLSchema({
+  query: RootQueryType,
+  mutation: RootMutationType
+})
+
+
+// The root provides a resolver function for each API endpoint
+const root = {
+  hello: () => {
+    return 'Hello world!';
   },
 };
 
-// Same ApolloServer initialization as before, plus the drain plugin
-// for our httpServer.
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
-// Ensure we wait for our server to start
-await server.start();
+// app.use('/', (req, res) => {
+//   console.log('req.body', req.body)
+// })
 
-// Same ApolloServer initialization as before, plus the drain plugin
-// for our httpServer.
-const server2 = new ApolloServer({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
-// Ensure we wait for our server to start
-await server2.start();
+app.use('/safeql', graphqlHTTP({
+  schema: schema,
+  // rootValue: root,
+  graphiql: true,
+  validationRules: [NoIntrospection],
+}))
 
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
-// const server = new ApolloServer({
-//   typeDefs,
-//   resolvers,
-// });
+app.use('/unsafeql', graphqlHTTP({
+  schema: schema,
+  // rootValue: root,
+  graphiql: true,
+}))
 
-// Set up our Express middleware to handle CORS, body parsing,
-// and our expressMiddleware function.
-app.use(
-  '/1/',
-  cors(),
-  // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
-  bodyParser.json({ limit: '50mb' }),
-  // expressMiddleware accepts the same arguments:
-  // an Apollo Server instance and optional configuration options
-  expressMiddleware(server, {
-    context: async ({ req }) => ({ token: req.headers.token }),
-  }),
-);
 
-app.use(
-  '/2/',
-  cors(),
-  // 50mb is the limit that `startStandaloneServer` uses, but you may configure this to suit your needs
-  bodyParser.json({ limit: '50mb' }),
-  // expressMiddleware accepts the same arguments:
-  // an Apollo Server instance and optional configuration options
-  expressMiddleware(server2, {
-    context: async ({ req }) => ({ token: req.headers.token }),
-  }),
-);
-
-// Modified server startup
-await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
-console.log(`🚀 Server ready at http://localhost:4000/`);
+app.listen(4000., () => console.log('server is listening'));
