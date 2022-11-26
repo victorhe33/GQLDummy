@@ -19,6 +19,9 @@
   "homepage": "https://github.com/victorhe33/GQLDummy#readme",
   "dependencies": {
     "@apollo/server": "^4.2.1",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "graphql": "^16.6.0"
   },
   "devDependencies": {
