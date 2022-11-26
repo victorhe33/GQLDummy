@@ -1,0 +1,28 @@
+{
+  "name": "gqldummy",
+  "version": "1.0.0",
+  "description": "gql dummy serer",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorhe33/GQLDummy.git"
+  },
+  "author": "Victor He",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/victorhe33/GQLDummy/issues"
+  },
+  "homepage": "https://github.com/victorhe33/GQLDummy#readme",
+  "dependencies": {
+    "@apollo/server": "^4.2.1",
+    "graphql": "^16.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "type": "module"
+}
