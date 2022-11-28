@@ -4,7 +4,7 @@ const { buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLLis
 const app = express();
 const bodyParser = require('body-parser')
 app.use(bodyParser.json());
-const NoIntrospection = require('graphql-disable-introspection')
+const NoIntrospection = require('graphql-disable-introspection');
 
 const authors = [
   { id: 1, name: 'J. K. Rowling' },
