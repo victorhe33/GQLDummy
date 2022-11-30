@@ -5,6 +5,14 @@ const app = express();
 const bodyParser = require('body-parser')
 app.use(bodyParser.json());
 const NoIntrospection = require('graphql-disable-introspection');
+// const costAnalysis = require('graphql-cost-analysis');
+// import costAnalysis from 'graphql-cost-analysis'}
+const { simpleEstimator, createComplexityRule } = require('graphql-query-complexity')
+
+// cost analysis to prevent DOS attacks
+// const costAnalyzer = costAnalysis({
+//   maximumCost: 1000,
+// })
 
 const authors = [
   { id: 1, name: 'J. K. Rowling' },
@@ -156,12 +164,43 @@ const root = {
 //   console.log('req.body', req.body)
 // })
 
-app.use('/safeql', graphqlHTTP({
-  schema: schema,
-  // rootValue: root,
-  graphiql: true,
-  validationRules: [NoIntrospection],
-}))
+// app.use(
+//   '/safeql', 
+//   graphqlHTTP((req, res, graphQLParams) => ({
+//     schema: schema,
+//     // rootValue: root,
+//     graphiql: true,
+//     validationRules: [
+//       NoIntrospection,
+//       costAnalysis({
+//         variables: graphQLParams.variables,
+//         maximumCost: 1000,
+//       })
+//     ],
+//   }))
+// )
+
+app.use(
+  '/safeql',
+  graphqlHTTP(async (request, response, { variables }) => ({
+    schema,
+    graphiql: true,
+    validationRules: [
+      NoIntrospection,
+      createComplexityRule({
+        estimators: [
+          // Configure your estimators
+          simpleEstimator({ defaultComplexity: 1 }),
+        ],
+        maximumComplexity: 5,
+        variables,
+        onComplete: (complexity) => {
+          console.log('Query Complexity:', complexity);
+        },
+      }),
+    ],
+  }))
+);
 
 app.use('/unsafeql', graphqlHTTP({
   schema: schema,

@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "devStart": "nodemon server.js"
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,7 +12,9 @@
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "graphql": "^15.8.0",
+    "graphql-cost-analysis": "^1.0.3",
     "graphql-disable-introspection": "^1.2.0",
+    "graphql-query-complexity": "^0.12.0",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {

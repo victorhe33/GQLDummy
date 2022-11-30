@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 
-fetch('http://localhost:4000/unsafeql', {
+fetch('http://localhost:4000/safeql', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -74,4 +74,4 @@ fetch('http://localhost:4000/unsafeql', {
   }),
 })
   .then((res) => res.json())
-  .then((result) => console.log(result.data.books));
+  .then((result) => console.log(result));
