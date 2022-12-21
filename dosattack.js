@@ -75,3 +75,157 @@ fetch('http://localhost:4000/safeql', {
 })
   .then((res) => res.json())
   .then((result) => console.log(result));
+
+
+/*
+query{books{author{name}}}
+let queryString = 'query{';
+
+for {i =0 ; i < complexity; i++} {
+  
+  querystring += 'books{author{'
+}
+
+queryString += (name + '}'.repeat(complexity))
+
+*/
+
+/*
+query allSchemaTypes {  
+    __schema {  
+        types {  
+            fields {  
+                type{  
+                    fields {  
+                        type {  
+                            fields {  
+                                type {  
+                                    fields {  
+                                        type {
+                                          	fields {
+                                            		type {
+                                                		fields {
+                                                    		type {
+                                                        		fields {
+                                                            		type {
+                                                                		fields {
+                                                                    		type {
+                                                                        		fields {
+                                                                                type {
+                                                                                  	fields {
+                                                                                      	type {
+                                                                                          	fields {
+                                                                                              	type {
+                                                                                                  	fields {
+                                                                                                      	type {
+                                                                                                          	fields {
+                                                                                                              	type {
+                                                                                                                  	fields {
+                                                                                                                      	type {
+                                                                                                                          	fields {
+                                                                                                                              	type {
+                                                                                                                                  	fields {
+                                                                                                                                      	type {
+                                                                                                                                          	fields {
+                                                                                                                                              	type {
+                                                                                                                                                  	fields {
+                                                                                                                                                      	type {
+                                                                                                                                                        		fields {
+                                                                                                                                                            		type {
+                                                                                                                                                                		fields {
+                                                                                                                                                                    		type {
+                                                                                                                                                                        		fields {
+                                                                                                                                                                            		type {
+                                                                                                                                                                                		fields {
+                                                                                                                                                                                    		type {
+                                                                                                                                                                                        		fields {
+                                                                                                                                                                                            		type {
+                                                                                                                                                                                                		fields {
+                                                                                                                                                                                                    		type {
+                                                                                                                                                                                                        		fields {
+                                                                                                                                                                                                            		type {
+                                                                                                                                                                                                                		fields {
+                                                                                                                                                                                                                    		type {
+                                                                                                                                                                                                                        		fields {
+                                                                                                                                                                                                                            		type {
+                                                                                                                                                                                                                                		fields {
+                                                                                                                                                                                                                                    		type {
+                                                                                                                                                                                                                                        		fields {
+                                                                                                                                                                                                                                            		type {
+                                                                                                                                                                                                                                                		fields {
+                                                                                                                                                                                                                                                    		type {
+                                                                                                                                                                                                                                                        		fields {
+                                                                                                                                                                                                                                                            		type {
+                                                                                                                                                                                                                                                                		fields {
+                                                                                                                                                                                                                                                                       type {
+                                                                                                                                                                                                                                                                    			fields {
+                                                                                                                                                                                                                                                                          		name
+                                                                                                                                                                                                                                                                        		}	
+                                                                                                                                                                                                                                                                    		}
+                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                }
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                }
+                                                                                                                                                                            }
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                }
+                                                                                                                                                            }
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }  
+                                                                        }
+                                                                    }
+                                                                }  
+                                                        		}  
+                                                    		}
+                                                		}
+                                            		}
+                                        		}
+                                    		}
+                                    }  
+                                }  
+                            }  
+                        }  
+                    }  
+                }  
+            }  
+        }  
+    }  
+}
+*/
